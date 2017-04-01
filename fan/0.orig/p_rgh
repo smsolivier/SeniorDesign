@@ -1,0 +1,76 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      p_rgh;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 -1 -2 0 0 0 0];
+
+internalField   uniform 1e5;
+
+boundaryField
+{
+    defaultFaces
+    {
+        type empty; 
+    }
+    
+    inlet 
+    {
+        type fixedValue; 
+        value $internalField;   
+
+        // type zeroGradient; 
+    }
+
+    outlet 
+    {
+        // type fixedValue;
+        // value $internalField;
+
+        type fanPressure; 
+        patchType totalPressure; 
+        fileName "./constant/fanCurve"; 
+        outOfBounds clamp; 
+        direction out; 
+        p0 $internalField; 
+        value $internalField; 
+        gamma 1;
+    }
+
+    sg
+    {
+        type            fixedFluxPressure;
+        value           $internalField; 
+    }
+
+    shroud
+    {
+        type            fixedFluxPressure;
+        value           $internalField; 
+    }
+
+    leftWedge
+    {
+        type wedge; 
+    }
+
+    rightWedge
+    {
+        type wedge; 
+    }
+}
+
+
+// ************************************************************************* //

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+mpirun -np 4 buoyantSimpleFoam -parallel | tee log 
+reconstructPar
+
+echo "computing yPlus"
+buoyantSimpleFoam -postProcess -func yPlus > log.yPlus
+
+echo "computing wall heat flux"
+wallHeatFlux > log.whf 
+
+echo "interpolating centerline temperature"
+buoyantSimpleFoam -postProcess -func singleGraph > log.singleGraph 
+
+echo "writing cell centers"
+writeCellCentres > /dev/null 
+
+cat log.yPlus | grep 'patch sg y+ : '
+cat log.yPlus | grep 'patch shroud y+ : ' 
+
+cat log.whf | grep 'total:' 
